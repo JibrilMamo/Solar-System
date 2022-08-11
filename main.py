@@ -12,7 +12,7 @@ YELLOW = (255, 255, 0)
 CYAN = (0, 255, 255)
 MAGENTA = (255, 0, 255)
 TAN = (200,150,100)
-width, height = 800, 800
+width, height = 1000, 1000
 window = pygame.display.set_mode((width, height))
 
 PLANETS = []
@@ -50,21 +50,22 @@ class Planets:
         self.sun = False
         self.distance_to_sun = 0
 
-    def draw(self, win, draw_dist = True):
+    def draw(self, win, draw_dist = False,draw_line = False):
         x = self.x *self.Scale +width/2
         y = self.y * self.Scale+height/2
 
-        if len(self.orbit) > 2:
-            updated_points = []
-            for point in self.orbit:
-                x, y = point
-                x = x * self.Scale + width / 2
-                y = y * self.Scale + height / 2
-                updated_points.append((x, y))
 
-            pygame.draw.lines(win, self.color, False, updated_points, 2)
+        pygame.draw.circle(win, self.color, (x, y), self.radius)
 
-        pygame.draw.circle(win,self.color,(x,y),self.radius)
+        if draw_line:
+            if len(self.orbit) > 2:
+                updated_points = []
+                for point in self.orbit:
+                    x, y = point
+                    x = x * self.Scale + width / 2
+                    y = y * self.Scale + height / 2
+                    updated_points.append((x, y))
+                pygame.draw.lines(win, self.color, False, updated_points, 2)
         if draw_dist:
             if not self.sun:
                 distance_text = FONT.render(f"{round(self.distance_to_sun / 1000, 1)}km", 1, WHITE)
@@ -79,6 +80,8 @@ class Planets:
         dist_x = other_x-self.x
         dist_y = other_y-self.y
         dist = math.sqrt(dist_x**2 +dist_y**2)
+        if dist ==0:
+            dist = .00000001
 
         if other.sun:
             self.distance_to_sun = dist
@@ -107,7 +110,23 @@ class Planets:
         self.orbit.append((self.x,self.y))
 
 
-def set_planet_position():
+def set_planet_position(x,y,planet):
+    # print(planet.x,planet.y)
+    # print(pygame.mouse.get_pos())
+    x1 = planet.x * planet.Scale + width / 2
+    y1 = planet.y * planet.Scale + height / 2
+    x2 =( (-1.6*x) / planet.Scale) #+ width / 2
+    y2 = ((y-y) / planet.Scale) # height / 2
+    if x > x1 - planet.radius and x < x1 + planet.radius:
+        if y > y1 - planet.radius and y < y1 + planet.radius:
+            print(2)
+            planet.x,planet.y = (x - width/2)*(planet.Scale**-1), (y - width/2)*(planet.Scale**-1)
+
+
+
+
+
+
     pass
 
 def draw(win,count):
@@ -152,11 +171,19 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
                 break
+
+            if pygame.mouse.get_pressed()[0]:
+                pos = pygame.mouse.get_pos()
+                x,y = pos
+                # print(1)
+                for planet in planets:
+                    set_planet_position(x, y,planet)
+
+
+
         for planet in planets:
             planet.update_position(planets)
-            planet.draw(window,True)
-
-
+            planet.draw(window)
 
 
         pygame.display.update()
