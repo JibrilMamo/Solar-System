@@ -149,11 +149,6 @@ def set_planet_position(x,y,planet):
             print(2)
             planet.x,planet.y = (x - width/2)*(planet.Scale**-1), (y - width/2)*(planet.Scale**-1)
 
-
-
-
-
-
     pass
 
 def draw(win,count):
@@ -164,10 +159,6 @@ def draw(win,count):
 
     elapsed_time = FONT2.render(f'Days: {count_d} Years: {count_y}', 1, WHITE)
     win.blit(elapsed_time, (width -70 - elapsed_time.get_width(), 40))
-
-
-
-
 
 def main():
     run=True
